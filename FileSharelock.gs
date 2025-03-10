@@ -56,7 +56,7 @@ function addHeaders(sheet) {
  * @return {array} A list of shared files (owned by you) with their names and URLs.
  * @customfunction
  */
-function FIND_AND_UNSHARE_FILES() {
+function FIND_AND_UNSHARE_FILES(sheet) {
 
   // This line could be optimized: 
   //
@@ -79,24 +79,13 @@ function FIND_AND_UNSHARE_FILES() {
     try {
       // TODO: check if possible to extract from the file (e.g. getSharingPermission())
       let permissions = Drive.Permissions.list(fileId);
-      let permissionsFromFile = file.permissions;
-      Logger.log("TESTO");
-
-      Logger.log("permission 1");
-      Logger.log(permissions);
-
-      Logger.log("permission 2");
-      Logger.log(permissionsFromFile);
-      console.log(permissionsFromFile)
-
 
       // If there's more than one permission in the array -> we're sharing this file 
       // (the one obligatory permission is us - the owner. See https://developers.google.com/apps-script/reference/drive/permission)
       if (permissions.permissions && permissions.permissions.length > 1) {
-      Logger.log("found!!!");
         let isSuccessfullyUnshared = UNSHARE_FILE(fileId, permissions);
         let unsharedStatus = isSuccessfullyUnshared ? "success" : "failed";
-        sheet.appendRow(fileName, fileUrl, unsharedStatus);
+        sheet.appendRow([fileName, fileUrl, unsharedStatus]);
       }
     } catch (error) {
       Logger.log("Error getting permissions for file " + file.getName() + ": " + error);
